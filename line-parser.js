@@ -9,6 +9,8 @@ function LineParser(filepath, options) {
     var totalLines = 0;
     var encoding = options.encoding || 'utf8'; //['utf8', 'base64', 'ascii']
     var file = fs.openSync(filepath, 'r');
+    var backlog = [];
+    var reading = false;
 
     function getBytes(numberOfBytes, callback) {
         //fs.read(fd, buffer, offset, length, position, callback)
@@ -36,14 +38,23 @@ function LineParser(filepath, options) {
         callback(line, lineNumber);
     }
 
-    function nextLine(callback) {
-        // go through each byte one by one until we find a new line character.
+    // a list of callback related to the line numbers.
+    function processBacklog(callback){
+        if(backlog.length>0){
+            lineBuilder(backlog.shift());
+        }
+    }
+
+    function lineBuilder(callback){
+        reading=true;
         nextByte(function (byte) {
             switch (byte) {
                 case "\n":
                     lineNumber++;
                     callback(line.slice(0, -1), lineNumber);
                     line = "";
+                    reading=false;
+                    processBacklog();
                     break;
                 case "\r":
                     nextByte(function (byteTwo) {
@@ -52,11 +63,15 @@ function LineParser(filepath, options) {
                             lineNumber++;
                             callback(line.slice(0, -2), lineNumber);
                             line = "";
+                            reading=false;
+                            processBacklog();
                         }
                         else {
                             // It's a new line but we need to go back one byte
                             lineNumber++;
                             goBack(callback)
+                            reading=false;
+                            processBacklog();
                         }
                     })
                     break;
@@ -65,10 +80,22 @@ function LineParser(filepath, options) {
                     callback(-1, -1); // no more bytes
                     break;
                 default:
-                    nextLine(callback); // sorry this isn't a line yet, try again
+                    lineBuilder(callback); // sorry this isn't a line yet, try again
             }
 
         });
+    }
+
+    function nextLine(callback) {
+        // go through each byte one by one until we find a new line character.
+        if(reading){
+            backlog.push(callback);
+        }
+        else{
+            lineBuilder(callback)
+        }
+        reading = true;
+
     }
 
     function countLines(callback) {

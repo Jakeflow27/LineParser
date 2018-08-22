@@ -17,6 +17,9 @@ lp.countLines(function (count) {
                 next();
             }).then(function () {
                 console.log('processed all the lines')
+                lp.nextLine(function(line,ln){
+                    console.log('no more lines',line,ln)
+                })
             })
         })
     })
