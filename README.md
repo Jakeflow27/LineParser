@@ -4,8 +4,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
 
 ### Install and use this branch
 
-    npm install Jakeflow27/line-parser
-
+    npm install Jakeflow27/LineParser
 ### Process a single line
     var LineReader = require('linereader');
     var lp = new LineParser("text-file.log", {encoding: "utf8"});
@@ -66,7 +65,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     processing ln # 4 ""
     processing ln # 5 "### Install and use this branch"
     processing ln # 6 ""
-    processing ln # 7 "    npm install Jakeflow27/line-parser"
+    processing ln # 7 "    npm install Jakeflow27/LineParser"
     processing ln # 8 ""
     processing ln # 9 "### Process a single line"
     processing ln # 10 "    var LineReader = require('linereader');"
