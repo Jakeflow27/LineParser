@@ -6,7 +6,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
 
     npm install Jakeflow27/LineParser
 ### Process a single line
-    var LineReader = require('linereader');
+    var LineParser = require('line-parser');
     var lp = new LineParser("text-file.log", {encoding: "utf8"});
     lp.nextLine(function(line,lineNumber){
         // do something
@@ -17,7 +17,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     
 ### Process all lines
 
-    var LineParser = require('./line-parser');
+    var LineParser = require('line-parser');
     
     var lp = new LineParser("README.md", {encoding: "utf8"});
     lp.forEachLine(function(line,ln,next){
@@ -29,7 +29,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
 
 
 ### Example
-    var LineParser = require('./line-parser');
+    var LineParser = require('line-parser');
     
     // Example:
     const lp = new LineParser("README.md", {encoding: "utf8"});
@@ -54,9 +54,11 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     
     })
     
-    OUTPUT:
-    Total lines: 58
-    processed line 1 of 58
+    --------------------------------------------
+                       OUTPUT:
+    --------------------------------------------
+    Total lines: 56
+    processed line 1 of 56
     This is the first line: "Line-Parser"
     doing a bunch of stuff for the line
     checking line 2
@@ -66,7 +68,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     processing ln # 6 ""
     processing ln # 7 "    npm install Jakeflow27/LineParser"
     processing ln # 8 "### Process a single line"
-    processing ln # 9 "    var LineReader = require('linereader');"
+    processing ln # 9 "    var LineParser = require('line-parser');"
     processing ln # 10 "    var lp = new LineParser(\"text-file.log\", {encoding: \"utf8\"});"
     processing ln # 11 "    lp.nextLine(function(line,lineNumber){"
     processing ln # 12 "        // do something"
@@ -77,7 +79,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     processing ln # 17 "    "
     processing ln # 18 "### Process all lines"
     processing ln # 19 ""
-    processing ln # 20 "    var LineParser = require('./line-parser');"
+    processing ln # 20 "    var LineParser = require('line-parser');"
     processing ln # 21 "    "
     processing ln # 22 "    var lp = new LineParser(\"README.md\", {encoding: \"utf8\"});"
     processing ln # 23 "    lp.forEachLine(function(line,ln,next){"
@@ -89,7 +91,7 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     processing ln # 29 ""
     processing ln # 30 ""
     processing ln # 31 "### Example"
-    processing ln # 32 "    var LineParser = require('./line-parser');"
+    processing ln # 32 "    var LineParser = require('line-parser');"
     processing ln # 33 "    "
     processing ln # 34 "    // Example:"
     processing ln # 35 "    const lp = new LineParser(\"README.md\", {encoding: \"utf8\"});"
@@ -114,7 +116,3 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     processing ln # 54 "    "
     processing ln # 55 "    })"
     processing ln # 56 "    "
-    processing ln # 57 "    OUTPUT:"
-    processing ln # 58 "    "
-    processed all the lines
-    
