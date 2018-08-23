@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 function LineParser(filepath, options) {
-
+    if (!options){options={}}
     filepath = path.normalize(filepath);
     var line = "";
     var lineNumber = 0;
