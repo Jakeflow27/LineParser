@@ -22,7 +22,7 @@ function LineParser(filepath, options) {
                 lineNumber++;
                 lastLine=line;
                 line = "";
-                callback(line, lineNumber);
+                callback(lastLine, lineNumber);
                 break;
             case "\r":
                 var secondByte = nextByte();
