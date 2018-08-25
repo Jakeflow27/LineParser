@@ -112,11 +112,10 @@ function LineParser(filepath, options, callback) {
     }
 
     function forEachLine(modifier, callback) {
-        if(!callback){callback=self.callback};
-
         nextLine(function (line, ln) {
             if (line == -1) {
                 // this is the eof
+                if(!callback){callback=self.callback}
                 if (callback) {
                     callback()
                 }
@@ -126,8 +125,8 @@ function LineParser(filepath, options, callback) {
                     forEachLine(modifier, callback)
                 })
             }
-        })
-
+        });
+        return self; // allows the .then function to be called from forEachLine.then
     }
     this.then = function then(after) {if (after) {callback = after;}}
     this.nextLine = nextLine;
