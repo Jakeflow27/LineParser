@@ -1,96 +1,62 @@
 var fs = require('fs');
 var path = require('path');
 
-function LineParser(filepath, options, callback) {
-    var callback = callback;
-    var self = this;
+function LineParser(filepath, options) {
     if (!options){options={}}
     filepath = path.normalize(filepath);
     var line = "";
     var lineNumber = 0;
     var totalLines = 0;
     var encoding = options.encoding || 'utf8'; //['utf8', 'base64', 'ascii']
-    var file = fs.openSync(filepath, 'r');
-    var reading = false;
 
-    // function parse2(){
-    //     var readable = fs.createReadStream(filepath,encoding);
-    //     var backlog = [];
-    //     var reading = false;
-    //     readable.pause();
-    //
-    //     readable.on('data',function(chunk){
-    //         readable.pause();
-    //         readable.resume();
-    //     })
-    // }
-
-    function getBytes(numberOfBytes, callback) {
-        //fs.read(fd, buffer, offset, length, position, callback)
-        fs.read(file, new Buffer(numberOfBytes), 0, numberOfBytes, null, callback);
-        // callback(err, numberOfBytes, data)
-    }
+    var file = fs.createReadStream(filepath,encoding);
 
     function nextByte(callback) {
-        // get 1 byte and add the result to the line buffer
-        getBytes(1, function (err, num, data) {
-            if (err) {
-                throw err
-            }
-            data = data.toString(encoding);
-            line = line.concat(data);
-            callback(data);
-        });
+        return file.read(1);
     }
 
-    function goBack(callback) {
-        // delete the last byte
-        line = line.slice(0, line.length - 1);
-        fs.read(file, null, 0, 0, -1);
-        // nextLine(callback);
-        callback(line, lineNumber);
-    }
-
-    // a list of callback related to the line numbers.
-
-    function getLine(){
-        var line = fs.WritableStream();
-    }
     function lineBuilder(callback){
-        nextByte(function (byte) {
-            switch (byte) {
-                case "\n":
+        var byte = nextByte();
+        switch (byte) {
+            case "\n":
+                lineNumber++;
+                callback(line, lineNumber);
+                line = "";
+                break;
+            case "\r":
+                var secondByte = nextByte();
+                if (secondByte == "\n") {
+                    // found a windows newline, \r\n
                     lineNumber++;
-                    callback(line.slice(0, -1), lineNumber);
+                    callback(line, lineNumber);
                     line = "";
-                    break;
-                case "\r":
-                    nextByte(function (byteTwo) {
-                        if (byteTwo == "\n") {
-                            // found a windows newline, \r\n
-                            lineNumber++;
-                            callback(line.slice(0, -2), lineNumber);
-                            line = "";
-                        }
-                        else {
-                            // It's a new line but we need to go back one byte
-                            lineNumber++;
-                            goBack(callback)
-                        }
-                    })
-                    break;
-                case "\u0000":
-                    // console.log('eof');
-                    callback(-1, -1); // no more bytes
-                    break;
-                default:
-                    lineBuilder(callback); // sorry this isn't a line yet, try again
-            }
+                }
+                else {
+                    // It's a new line but we need to go back one byte
+                    lineNumber++;
+                    callback(line, lineNumber);
+                    line=secondByte;
+                }
+                break;
+            case "\u0000":
+                // console.log('eof');
+                callback(-1, -1); // no more bytes
+                break;
+            case null:
+                // console.log('eof');
+                callback(-1, -1); // no more bytes
+                break;
+            default:
+                line=line.concat(byte);
+                lineBuilder(callback); // sorry this isn't a line yet, try again
+        }
 
-        });
     }
 
     function nextLine(callback) {
+        // return new Promise(function(resolve,reject){
+        //
+        // })
         lineBuilder(callback)
     }
 
@@ -106,13 +72,11 @@ function LineParser(filepath, options, callback) {
             });
     }
 
-    function forEachLine(modifier, callback) {
-            // return new Promise(function(resolve,reject){
-
+    function forEachLine(modifier) {
+            return new Promise(function(resolve,reject){
                 function mod(line, ln) {
                     if (line == -1) {
-                        // resolve()
-                        if(callback){callback()}
+                        resolve();
                     }
                     else {
                         modifier(line, ln, function () {
@@ -120,9 +84,8 @@ function LineParser(filepath, options, callback) {
                         })
                     }
                 }
-                
                 nextLine(mod)
-        // })
+            })
     }
 
     this.nextLine = nextLine;
