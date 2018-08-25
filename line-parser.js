@@ -1,7 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 
-function LineParser(filepath, options) {
+function LineParser(filepath, options, callback) {
+    var self = this;
     if (!options){options={}}
     filepath = path.normalize(filepath);
     var line = "";
@@ -111,12 +112,7 @@ function LineParser(filepath, options) {
     }
 
     function forEachLine(modifier, callback) {
-
-        this.then = function then(after) {
-            if (after) {
-                callback = after;
-            }
-        }
+        if(!callback){callback=self.callback};
 
         nextLine(function (line, ln) {
             if (line == -1) {
@@ -132,10 +128,8 @@ function LineParser(filepath, options) {
             }
         })
 
-        return this;
-
     }
-
+    this.then = function then(after) {if (after) {callback = after;}}
     this.nextLine = nextLine;
     this.countLines = countLines;
     this.forEachLine = forEachLine;
