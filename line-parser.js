@@ -65,12 +65,12 @@ function LineParser(filepath, options) {
 
     function countLines(callback) {
         var i;
-        require('fs').createReadStream(filepath)
+        fs.createReadStream(filepath,{autoClose:true})
             .on('data', function (chunk) {
                 for (i = 0; i < chunk.length; ++i)
                     if (chunk[i] == 10) totalLines++;
             })
-            .on('end', function () {
+            .on('close', function () {
                 callback(totalLines);
             });
     }
