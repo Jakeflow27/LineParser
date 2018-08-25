@@ -52,25 +52,17 @@ function LineParser(filepath, options, callback) {
     }
 
     // a list of callback related to the line numbers.
-    function processBacklog(callback){
-        if(backlog.length>0){
-            lineBuilder(backlog.shift());
-        }
-    }
 
     function getLine(){
         var line = fs.WritableStream();
     }
     function lineBuilder(callback){
-        reading=true;
         nextByte(function (byte) {
             switch (byte) {
                 case "\n":
                     lineNumber++;
                     callback(line.slice(0, -1), lineNumber);
                     line = "";
-                    reading=false;
-                    processBacklog();
                     break;
                 case "\r":
                     nextByte(function (byteTwo) {
@@ -79,15 +71,11 @@ function LineParser(filepath, options, callback) {
                             lineNumber++;
                             callback(line.slice(0, -2), lineNumber);
                             line = "";
-                            reading=false;
-                            processBacklog();
                         }
                         else {
                             // It's a new line but we need to go back one byte
                             lineNumber++;
                             goBack(callback)
-                            reading=false;
-                            processBacklog();
                         }
                     })
                     break;
@@ -103,15 +91,7 @@ function LineParser(filepath, options, callback) {
     }
 
     function nextLine(callback) {
-        // go through each byte one by one until we find a new line character.
-        if(reading){
-            backlog.push(callback);
-        }
-        else{
-            lineBuilder(callback)
-        }
-        reading = true;
-
+        lineBuilder(callback)
     }
 
     function countLines(callback) {
