@@ -11,8 +11,19 @@ function LineParser(filepath, options, callback) {
     var totalLines = 0;
     var encoding = options.encoding || 'utf8'; //['utf8', 'base64', 'ascii']
     var file = fs.openSync(filepath, 'r');
-    var backlog = [];
     var reading = false;
+
+    // function parse2(){
+    //     var readable = fs.createReadStream(filepath,encoding);
+    //     var backlog = [];
+    //     var reading = false;
+    //     readable.pause();
+    //
+    //     readable.on('data',function(chunk){
+    //         readable.pause();
+    //         readable.resume();
+    //     })
+    // }
 
     function getBytes(numberOfBytes, callback) {
         //fs.read(fd, buffer, offset, length, position, callback)
@@ -47,6 +58,9 @@ function LineParser(filepath, options, callback) {
         }
     }
 
+    function getLine(){
+        var line = fs.WritableStream();
+    }
     function lineBuilder(callback){
         reading=true;
         nextByte(function (byte) {
@@ -113,21 +127,24 @@ function LineParser(filepath, options, callback) {
     }
 
     function forEachLine(modifier, callback) {
-            // now returns a promise.
-            return new Promise(function(resolve,reject){
-            function mod(line, ln) {
-                if (line == -1) {
-                    resolve();
+            // return new Promise(function(resolve,reject){
+
+                function mod(line, ln) {
+                    if (line == -1) {
+                        // resolve()
+                        if(callback){callback()}
+                    }
+                    else {
+                        modifier(line, ln, function () {
+                            nextLine(mod)
+                        })
+                    }
                 }
-                else {
-                    modifier(line, ln, function () {
-                        nextLine(mod)
-                    })
-                }
-            }
-            nextLine(mod)
-        })
+                
+                nextLine(mod)
+        // })
     }
+
     this.nextLine = nextLine;
     this.countLines = countLines;
     this.forEachLine = forEachLine;
