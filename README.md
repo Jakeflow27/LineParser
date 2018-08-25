@@ -57,62 +57,64 @@ Stream a file byte by byte and process each line. Each line is loaded as it's ne
     --------------------------------------------
                        OUTPUT:
     --------------------------------------------
-    Total lines: 56
-    processed line 1 of 56
-    This is the first line: "Line-Parser"
-    doing a bunch of stuff for the line
-    checking line 2
-    processing ln # 3 "Stream a file byte by byte and process each line. Each line is loaded as it's needed"
-    processing ln # 4 ""
-    processing ln # 5 "### Install and use this branch"
-    processing ln # 6 ""
-    processing ln # 7 "    npm install Jakeflow27/LineParser"
-    processing ln # 8 "### Process a single line"
-    processing ln # 9 "    var LineParser = require('line-parser');"
-    processing ln # 10 "    var lp = new LineParser(\"text-file.log\", {encoding: \"utf8\"});"
-    processing ln # 11 "    lp.nextLine(function(line,lineNumber){"
-    processing ln # 12 "        // do something"
-    processing ln # 13 "    })"
-    processing ln # 14 "    lp.nextLine(function(line,lineNumber){"
-    processing ln # 15 "        // get another line"
-    processing ln # 16 "    })"
-    processing ln # 17 "    "
-    processing ln # 18 "### Process all lines"
-    processing ln # 19 ""
-    processing ln # 20 "    var LineParser = require('line-parser');"
-    processing ln # 21 "    "
-    processing ln # 22 "    var lp = new LineParser(\"README.md\", {encoding: \"utf8\"});"
-    processing ln # 23 "    lp.forEachLine(function(line,ln,next){"
-    processing ln # 24 "        console.log('processing ln #', ln, line);"
-    processing ln # 25 "        next();"
-    processing ln # 26 "    }).then(function(){"
-    processing ln # 27 "        console.info('fin');"
-    processing ln # 28 "    })"
-    processing ln # 29 ""
-    processing ln # 30 ""
-    processing ln # 31 "### Example"
-    processing ln # 32 "    var LineParser = require('line-parser');"
-    processing ln # 33 "    "
-    processing ln # 34 "    // Example:"
-    processing ln # 35 "    const lp = new LineParser(\"README.md\", {encoding: \"utf8\"});"
-    processing ln # 36 "    "
-    processing ln # 37 "    lp.countLines(function (count) {"
-    processing ln # 38 "        console.log(\"Total lines:\", count);"
-    processing ln # 39 "    "
-    processing ln # 40 "        lp.nextLine(function (line, lineNumber) {"
-    processing ln # 41 "            console.log(\"processed line\", lineNumber, \"of\", count); // good for progress bars etc"
-    processing ln # 42 "            console.log(\"This is the first line:\", JSON.stringify(line));"
-    processing ln # 43 "            console.log('doing a bunch of stuff for the line');"
-    processing ln # 44 "            lp.nextLine(function(line,lineNumber){"
-    processing ln # 45 "                console.log('checking line',lineNumber);"
-    processing ln # 46 "                lp.forEachLine(function(line,ln,next){"
-    processing ln # 47 "                    console.log('processing ln #',ln, JSON.stringify(line));"
-    processing ln # 48 "                    next();"
-    processing ln # 49 "                }).then(function(){"
-    processing ln # 50 "                    console.log('processed all the lines')"
-    processing ln # 51 "                })"
-    processing ln # 52 "            })"
-    processing ln # 53 "        })"
-    processing ln # 54 "    "
-    processing ln # 55 "    })"
-    processing ln # 56 "    "
+    checking 59 lines
+    1 'Line-Parser'
+    2 '='
+    3 'Stream a file byte by byte and process each line. Each line is loaded as it\'s needed'
+    4 ''
+    5 '### Install and use this branch'
+    6 ''
+    7 '    npm install Jakeflow27/LineParser'
+    8 '### Process a single line'
+    9 '    var LineParser = require(\'line-parser\');'
+    10 '    var lp = new LineParser("text-file.log", {encoding: "utf8"});'
+    11 '    lp.nextLine(function(line,lineNumber){'
+    12 '        // do something'
+    13 '    })'
+    14 '    lp.nextLine(function(line,lineNumber){'
+    15 '        // get another line'
+    16 '    })'
+    17 '    '
+    18 '### Process all lines'
+    19 ''
+    20 '    var LineParser = require(\'line-parser\');'
+    21 '    '
+    22 '    var lp = new LineParser("README.md", {encoding: "utf8"});'
+    23 '    lp.forEachLine(function(line,ln,next){'
+    24 '        console.log(\'processing ln #\', ln, line);'
+    25 '        next();'
+    26 '    }).then(function(){'
+    27 '        console.info(\'fin\');'
+    28 '    })'
+    29 ''
+    30 ''
+    31 '### Example'
+    32 '    var LineParser = require(\'line-parser\');'
+    33 '    '
+    34 '    // Example:'
+    35 '    const lp = new LineParser("README.md", {encoding: "utf8"});'
+    36 '    '
+    37 '    lp.countLines(function (count) {'
+    38 '        console.log("Total lines:", count);'
+    39 '    '
+    40 '        lp.nextLine(function (line, lineNumber) {'
+    41 '            console.log("processed line", lineNumber, "of", count); // good for progress bars etc'
+    42 '            console.log("This is the first line:", JSON.stringify(line));'
+    43 '            console.log(\'doing a bunch of stuff for the line\');'
+    44 '            lp.nextLine(function(line,lineNumber){'
+    45 '                console.log(\'checking line\',lineNumber);'
+    46 '                lp.forEachLine(function(line,ln,next){'
+    47 '                    console.log(\'processing ln #\',ln, JSON.stringify(line));'
+    48 '                    next();'
+    49 '                }).then(function(){'
+    50 '                    console.log(\'processed all the lines\')'
+    51 '                })'
+    52 '            })'
+    53 '        })'
+    54 '    '
+    55 '    })'
+    56 '    '
+    57 '    --------------------------------------------'
+    58 '                       OUTPUT:'
+    59 '    --------------------------------------------'
+    it is fin

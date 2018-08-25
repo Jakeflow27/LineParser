@@ -14,28 +14,31 @@ function LineParser(filepath, options) {
     function nextByte(callback) {
         return file.read(1);
     }
-
+    var lastLine = "";
     function lineBuilder(callback){
         var byte = nextByte();
         switch (byte) {
             case "\n":
                 lineNumber++;
-                callback(line, lineNumber);
+                lastLine=line;
                 line = "";
+                callback(line, lineNumber);
                 break;
             case "\r":
                 var secondByte = nextByte();
                 if (secondByte == "\n") {
                     // found a windows newline, \r\n
                     lineNumber++;
-                    callback(line, lineNumber);
+                    lastLine=line;
                     line = "";
+                    callback(lastLine, lineNumber);
                 }
                 else {
                     // It's a new line but we need to go back one byte
                     lineNumber++;
-                    callback(line, lineNumber);
+                    lastLine=line;
                     line=secondByte;
+                    callback(lastLine, lineNumber);
                 }
                 break;
             case "\u0000":
