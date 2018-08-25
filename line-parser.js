@@ -2,6 +2,7 @@ var fs = require('fs');
 var path = require('path');
 
 function LineParser(filepath, options, callback) {
+    var callback = callback;
     var self = this;
     if (!options){options={}}
     filepath = path.normalize(filepath);
@@ -112,23 +113,21 @@ function LineParser(filepath, options, callback) {
     }
 
     function forEachLine(modifier, callback) {
-        nextLine(function (line, ln) {
-            if (line == -1) {
-                // this is the eof
-                if(!callback){callback=self.callback}
-                if (callback) {
-                    callback()
+            // now returns a promise.
+            return new Promise(function(resolve,reject){
+            function mod(line, ln) {
+                if (line == -1) {
+                    resolve();
+                }
+                else {
+                    modifier(line, ln, function () {
+                        nextLine(mod)
+                    })
                 }
             }
-            else {
-                modifier(line, ln, function () {
-                    forEachLine(modifier, callback)
-                })
-            }
-        });
-        return self; // allows the .then function to be called from forEachLine.then
+            nextLine(mod)
+        })
     }
-    this.then = function then(after) {if (after) {callback = after;}}
     this.nextLine = nextLine;
     this.countLines = countLines;
     this.forEachLine = forEachLine;
