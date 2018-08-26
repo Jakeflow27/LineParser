@@ -11,7 +11,7 @@ function example(){
             return "done";
         }).then(function(stats){
             console.log("stats",stats);
-            console.log('finished in',stats.duration,"seconds");
+            console.log("checked", stats.lines, "lines in",stats.duration,"seconds");
         })
     })
 }

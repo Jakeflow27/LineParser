@@ -47,11 +47,11 @@ function LineParser(filepath, options) {
                 break;
             case "\u0000":
                 // console.log('eof');
-                return {line:-1,ln:-1} // no more bytes
+                return {line:-1,ln:ln} // no more bytes
                 break;
             case null:
                 // console.log('eof');
-                return {line:-1,ln:-1}  // no more bytes
+                return {line:-1,ln:ln}  // no more bytes
                 break;
             default:
                 line=line.concat(byte);
@@ -82,10 +82,11 @@ function LineParser(filepath, options) {
 
         var ldata = await nextLine("");
 
-        if (ldata.line == -1 && ldata.ln == -1){
+        if (ldata.line == -1){
             // this signals we're at the last line
             stats.end=  new Date().getTime();
             stats.duration = ( stats.end - stats.start ) / 1000;
+            stats.lines = ldata.ln;
             return stats;
         }
         else{
