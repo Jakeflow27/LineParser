@@ -18,6 +18,7 @@ function LineParser(filepath, options) {
     var ln=0;
     var lastLine = "";
     var lagByte=""; // forgot to add this
+
     // eventually this recursive function returns {line:lineData,ln:lineNumber}
     function nextLine(line){
         var byte = nextByte();
@@ -47,11 +48,11 @@ function LineParser(filepath, options) {
                 break;
             case "\u0000":
                 // console.log('eof');
-                return {line:-1,ln:ln} // no more bytes
+                return {line:-1,ln:ln}; // no more bytes
                 break;
             case null:
                 // console.log('eof');
-                return {line:-1,ln:ln}  // no more bytes
+                return {line:-1,ln:ln}; // no more bytes
                 break;
             default:
                 line=line.concat(byte);
@@ -91,7 +92,7 @@ function LineParser(filepath, options) {
         }
         else{
             await modifier(ldata);
-            return forEachLine(modifier);
+            return await forEachLine(modifier);
         }
     }
 
