@@ -2,10 +2,10 @@ var fs = require('fs');
 var path = require('path');
 
 function LineParser(filepath, options) {
+    var self = this;
     if (!options){options={}}
     filepath = path.normalize(filepath);
     var line = "";
-    var lineNumber = 0;
     var totalLines = 0;
     var encoding = options.encoding || 'utf8'; //['utf8', 'base64', 'ascii']
 
@@ -14,53 +14,50 @@ function LineParser(filepath, options) {
     function nextByte(callback) {
         return file.read(1);
     }
+
+    var ln=0;
     var lastLine = "";
-    function lineBuilder(callback){
+    var lagByte=""; // forgot to add this
+    // eventually this recursive function returns {line:lineData,ln:lineNumber}
+    function nextLine(line){
         var byte = nextByte();
+        if(!line){line=""}
+        if(lagByte){
+            line=line.concat(lagByte);
+            lagByte=null;
+        }
         switch (byte) {
             case "\n":
-                lineNumber++;
-                lastLine=line;
-                line = "";
-                callback(lastLine, lineNumber);
+                ln++;
+                return {line:line,ln:ln}
                 break;
             case "\r":
                 var secondByte = nextByte();
                 if (secondByte == "\n") {
                     // found a windows newline, \r\n
-                    lineNumber++;
-                    lastLine=line;
-                    line = "";
-                    callback(lastLine, lineNumber);
+                    ln++;
+                    return {line:line,ln:ln}
                 }
                 else {
                     // It's a new line but we need to go back one byte
-                    lineNumber++;
-                    lastLine=line;
-                    line=secondByte;
-                    callback(lastLine, lineNumber);
+                    ln++;
+                    lagByte=byte;
+                    return {line:line,ln:ln}
                 }
                 break;
             case "\u0000":
                 // console.log('eof');
-                callback(-1, -1); // no more bytes
+                return {line:-1,ln:-1} // no more bytes
                 break;
             case null:
                 // console.log('eof');
-                callback(-1, -1); // no more bytes
+                return {line:-1,ln:-1}  // no more bytes
                 break;
             default:
                 line=line.concat(byte);
-                lineBuilder(callback); // sorry this isn't a line yet, try again
+                return nextLine(line); // sorry this isn't a line yet, try again
         }
 
-    }
-
-    function nextLine(callback) {
-        // return new Promise(function(resolve,reject){
-        //
-        // })
-        lineBuilder(callback)
     }
 
     function countLines(callback) {
@@ -75,20 +72,26 @@ function LineParser(filepath, options) {
             });
     }
 
-    function forEachLine(modifier) {
-            return new Promise(function(resolve,reject){
-                function mod(line, ln) {
-                    if (line == -1) {
-                        resolve();
-                    }
-                    else {
-                        modifier(line, ln, function () {
-                            nextLine(mod)
-                        })
-                    }
-                }
-                nextLine(mod)
-            })
+    var stats;
+
+    async function forEachLine(modifier) {
+        if(!stats){
+            stats = {}
+            stats.start = new Date().getTime();
+        }
+
+        var ldata = await nextLine("");
+
+        if (ldata.line == -1 && ldata.ln == -1){
+            // this signals we're at the last line
+            stats.end=  new Date().getTime();
+            stats.duration = ( stats.end - stats.start ) / 1000;
+            return stats;
+        }
+        else{
+            await modifier(ldata);
+            return forEachLine(modifier);
+        }
     }
 
     this.nextLine = nextLine;
